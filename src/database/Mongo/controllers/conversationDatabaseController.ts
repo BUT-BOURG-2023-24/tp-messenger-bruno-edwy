@@ -1,17 +1,33 @@
 import { MongooseID } from '../../../types';
 import Conversation, {IConversation}  from '../Models/ConversationModel'
 
-async function getConversationWithParticipants (participants: MongooseID[]) {
+// async function getConversationWithParticipantsI (participants: MongooseID[]) {
+//     try {
+//         const conversation: IConversation  | null = await Conversation.findOne({"participants": {"$size" : participants.length, "$all": participants}});
+
+//         if (conversation === null) {
+//             return 'Id not found.';
+//         } 
+
+//         return conversation;
+//     } catch (error) {
+//         return error;
+//     }
+// }
+
+async function getConversationWithParticipantsI(participants: MongooseID[]): Promise<IConversation[]> {
     try {
-        const conversation: IConversation  | null = await Conversation.findOne({"participants": {"$size" : participants.length, "$all": participants}});
+        const conversation: IConversation | null = await Conversation.findOne({
+            "participants": { "$size": participants.length, "$all": participants }
+        });
 
         if (conversation === null) {
-            return 'Id not found.';
-        } 
+            return []; // Return an empty array if conversation is not found
+        }
 
-        return conversation;
+        return [conversation]; // Wrap the single conversation in an array
     } catch (error) {
-        return error;
+        return []; // Handle errors by returning an empty array or handle accordingly
     }
 }
 
@@ -91,12 +107,14 @@ async function deleteConversation(idConversation: MongooseID){
     }
 }
 
-module.exports = {
-    getConversationWithParticipants,
-    getAllConversationsForUser,
-    getConversationById,
-    createConversation,
-    addMessageToConversation,
-    setConversationSeenForUserAndMessage,
-    deleteConversation,
-};
+// module.exports = {
+//     getConversationWithParticipantsI,
+//     getAllConversationsForUser,
+//     getConversationById,
+//     createConversation,
+//     addMessageToConversation,
+//     setConversationSeenForUserAndMessage,
+//     deleteConversation,
+// };
+
+export default getConversationWithParticipantsI;

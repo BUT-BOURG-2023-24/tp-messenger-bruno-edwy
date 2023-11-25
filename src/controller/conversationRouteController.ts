@@ -1,8 +1,12 @@
 import { Mongoose } from 'mongoose';
 import Conversation, {IConversation}  from '../database/Mongo/Models/ConversationModel'
-import * as ConversationControler from '../database/Mongo/controllers/conversationDatabaseController'
+// import { getConversationWithParticipants } from '../database/Mongo/controllers/conversationDatabaseController'
 import { Request, Response } from 'express';
 import { MongooseID } from '../types';
+// import { getConversationWithParticipants } from '../database/Mongo/controllers/conversationDatabaseController';
+// const ConversationController = require('../database/Mongo/controllers/conversationDatabaseController');
+
+import getConversationWithParticipantsI from '../database/Mongo/controllers/conversationDatabaseController';
 
 // revoir les fonctions à exporter (faire shéma de la requete http) 
 
@@ -10,7 +14,7 @@ async function getConversationWithParticipants (req: Request, res: Response) {
     try {
         //participants: MongooseID[];
         const particicpants: MongooseID[] = req.body; 
-        const conversations: IConversation[]  = await ConversationControler.getConversationWithParticipants(particicpants);
+        const conversations: IConversation[]  = await getConversationWithParticipantsI(particicpants);
         res.status(200).json(conversations);
     } catch (error) {
         res.status(500).send({ message: error});

@@ -1,32 +1,61 @@
 const mongoose = require("mongoose");
 import User, { IUser } from "../database/Mongo/Models/UserModel";
-import { Request, Response } from "express"; 
+import { Request, Response } from "express";
+import MongoUserDatabase from "../database/Mongo/controllers/userDataBaseController";
 
 	
-async function createUser(req: Request, res: Response) {
+async function login(req: Request, res: Response) {
 	
-    const obj = new User({
+    // const obj = new User({
       
-      username: req.body.username,
-      password: req.body.password,
-      profilePicId: req.body.profilePicId
+    //   username: req.body.username,
+    //   password: req.body.password,
+    //   profilePicId: req.body.profilePicId
       
-    });
+    // });
       
    
       
+    // try {
+      
+    //   // const savedObj: IUser = await obj.save();
+      
+   
+    //   // return res.status(200).json(savedObj);
+    //   return res.status(200).json({message: "coucou"});
+      
+    // } catch (error) {
+      
+    //   return res.status(500).json({ message: error });
+        
+    // }
+
     try {
+        // Your logic to create a user goes here
+
+        // Assuming user creation was successful
+        const obj = new User({
       
-      const savedObj: IUser = await obj.save();
-      
-   
-      
-      res.status(200).json(savedObj);
-      
+          username: req.body.username,
+          password: req.body.password,
+          profilePicId: req.body.profilePicId
+        
+        });
+        const message = 'User created successfully.';
+        if (await MongoUserDatabase.getUserByNameDatabase(req.body.username) !== null){
+            // console.log(await MongoUserDatabase.getUserByNameDatabase(req.body.username));
+            let user = MongoUserDatabase.getUserByNameDatabase(req.body.username)
+            res.status(200).json({message: "utilisateur existe déjà", user: user});
+        } else{
+            MongoUserDatabase.createUserDatabase(obj);
+            let user = MongoUserDatabase.getUserByNameDatabase(req.body.username)
+            // res.status(200).json({ message });
+            res.status(200).json({ user: user });
+        } 
+        
     } catch (error) {
-      
-      res.status(500).json({ message: error });
-      
+        console.error(error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
       
 };
@@ -75,4 +104,4 @@ function getUsersByIds(req: Request, res: Response){
 
 }
 
-module.exports = {createUser, getUserByName, getUserById, getUsersByIds};
+module.exports = {login, getUserByName, getUserById, getUsersByIds};
