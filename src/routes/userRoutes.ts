@@ -11,5 +11,8 @@ router.post('/login', async (req: Request, res: Response) => {
   await userRouteController.login(req, res);
 });
 
+router.get('/online', async () => {
+  await userRouteController.online();
+});
 
 module.exports = router;

@@ -44,11 +44,12 @@ async function login(req: Request, res: Response) {
         const message = 'User created successfully.';
         if (await MongoUserDatabase.getUserByNameDatabase(req.body.username) !== null){
             // console.log(await MongoUserDatabase.getUserByNameDatabase(req.body.username));
-            let user = MongoUserDatabase.getUserByNameDatabase(req.body.username)
+            let user = await MongoUserDatabase.getUserByNameDatabase(req.body.username)
+            console.log(user);
             res.status(200).json({message: "utilisateur existe déjà", user: user});
         } else{
-            MongoUserDatabase.createUserDatabase(obj);
-            let user = MongoUserDatabase.getUserByNameDatabase(req.body.username)
+            await MongoUserDatabase.createUserDatabase(obj);
+            let user = await MongoUserDatabase.getUserByNameDatabase(req.body.username)
             // res.status(200).json({ message });
             res.status(200).json({ user: user });
         } 
@@ -104,4 +105,8 @@ function getUsersByIds(req: Request, res: Response){
 
 }
 
-module.exports = {login, getUserByName, getUserById, getUsersByIds};
+function online(){
+    
+}
+
+module.exports = {login, getUserByName, getUserById, getUsersByIds, online};
