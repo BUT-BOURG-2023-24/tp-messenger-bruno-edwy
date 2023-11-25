@@ -1,16 +1,16 @@
 import { Mongoose } from 'mongoose';
 import Conversation, {IConversation}  from '../database/Mongo/Models/ConversationModel'
-import * as ConversationControler from '../database/Mongo/controllers/conversationDatabaseController'
+const ConversationDatabase = require('../database/Mongo/controllers/conversationDatabaseController');
 import { Request, Response } from 'express';
 import { MongooseID } from '../types';
 
 // revoir les fonctions à exporter (faire shéma de la requete http) 
 
 async function getConversationWithParticipants (req: Request, res: Response) {
+    console.log("salut");
     try {
-        //participants: MongooseID[];
         const particicpants: MongooseID[] = req.body; 
-        const conversations: IConversation[]  = await ConversationControler.getConversationWithParticipants(particicpants);
+        const conversations: IConversation[]  = await ConversationDatabase.getConversationWithParticipants(particicpants);
         res.status(200).json(conversations);
     } catch (error) {
         res.status(500).send({ message: error});
@@ -18,9 +18,11 @@ async function getConversationWithParticipants (req: Request, res: Response) {
 }
 
 async function getAllConversationsForUser(req: Request, res: Response) {
+    console.log("salut2");
     try {
-        const conversations: IConversation[] = await Conversation.find({" particicpants": req.body});
-        res.status(200).json(conversations);
+        const user: MongooseID[] = req.body;
+        const conversations: IConversation[] = await ConversationDatabase.getAllConversationsForUser(user);
+        res.status(200).json({user: "salut"} );
     } catch (error) {
         res.status(500).send({ message: error});
     }
@@ -41,20 +43,10 @@ async function getConversationById(req: Request, res: Response){
 }
 
 async function createConversation(req: Request, res: Response) {
-    const newConversation = new Conversation({
-        participants: req.body.particicpants,
-        messages: req.body.messages,
-        title: req.body.title,
-        lastUpdate: req.body.lastUpdate,
-        seen: req.body.seen
-    });
+  
+    console.log("La route a bien appelé la fonction maFonction()");
 
-    try {
-        const savedConversation: IConversation = await newConversation.save();
-        res.status(200).json(savedConversation);
-    } catch (error) {
-        res.status(500).json({message: error})
-    }
+    res.status(200).send("Réponse de maFonction()");
 }
 
 async function addMessageToConversation(req: Request, res: Response){
@@ -89,13 +81,15 @@ async function setConversationSeenForUserAndMessage(req: Request, res: Response)
 
 async function deleteConversation(req: Request, res: Response){
     try {
-        const conversation: IConversation | null = await Conversation.findByIdAndDelete(req.params.id);
+        const newConversation: IConversation | null = await req.app.locals.conversationDatabase.getConversationById(req.params.id);
 
-        if (conversation === null) {
+        if (newConversation === null) {
             return res.status(404).json({ message: 'Id not found.' });
         }  
 
-        res.status(200).json(conversation);
+        const deletedConversation: IConversation | null = await req.app.locals.conversationDatabase.deleteConversation(newConversation);
+
+        res.status(200).json(deletedConversation);
     } catch (error) {
         res.status(500).json({ message: error });
     }

@@ -1,7 +1,7 @@
 import { MongooseID } from '../../../types';
 import Conversation, {IConversation}  from '../Models/ConversationModel'
 
-async function getConversationWithParticipants (participants: MongooseID[]) {
+async function getConversationWithParticipants(participants: MongooseID[]){
     try {
         const conversation: IConversation  | null = await Conversation.findOne({"participants": {"$size" : participants.length, "$all": participants}});
 
@@ -16,21 +16,12 @@ async function getConversationWithParticipants (participants: MongooseID[]) {
 }
 
 async function getAllConversationsForUser(particicpant: MongooseID) {
-    try {
-        const conversations: IConversation[] = await Conversation.find({" particicpants": particicpant});
-        return conversations;
-    } catch (error) {
-        return error;
-    }
+    
 }
 
 async function getConversationById(idConversation: MongooseID){
     try {
         const conversation: IConversation | null = await Conversation.findById(idConversation);
-
-        if (conversation === null) {
-            return 'Id not found.';
-        } 
 
         return conversation;
     } catch (error) {
@@ -38,13 +29,8 @@ async function getConversationById(idConversation: MongooseID){
     }
 }
 
-async function createConversation(conversation: IConversation) {
-    try {
-        const savedConversation: IConversation = await conversation.save();
-        return savedConversation;
-    } catch (error) {
-        return error;
-    }
+async function createConversation(conversation: IConversation ) {
+   
 }
 
 async function addMessageToConversation(idConversation: MongooseID ,messages: string[]){
@@ -77,13 +63,13 @@ async function setConversationSeenForUserAndMessage(idConversation: MongooseID ,
     }
 }
 
-async function deleteConversation(idConversation: MongooseID){
+async function deleteConversation(conversation : IConversation){
     try {
-        const conversation: IConversation | null = await Conversation.findByIdAndDelete(idConversation);
+        const deletedConversation: IConversation | null = await Conversation.findByIdAndDelete(conversation);
 
-        if (conversation === null) {
+       /* if (conversation === null) {
             return 'Id not found.';
-        }  
+        }  */
 
         return conversation;
     } catch (error) {

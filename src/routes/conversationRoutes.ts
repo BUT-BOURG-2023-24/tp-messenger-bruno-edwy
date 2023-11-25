@@ -3,7 +3,8 @@ const router = express.Router();
 
 const conversationController = require('../controller/conversationController');
 
-router.post('/', conversationController.createConversation);
-//router.post('conversation/login', conversationController.login);
+router.get('/', conversationController.getAllConversationsForUser)
+router.post('/', conversationController.createConversation)
+router.delete('/:id', conversationController.deleteConversation)
 
 export default router;
