@@ -18,14 +18,16 @@ async function getConversationWithParticipants (req: Request, res: Response) {
 }
 
 async function getAllConversationsForUser(req: Request, res: Response) {
-    console.log("salut2");
-    try {
-        const user: MongooseID[] = req.body;
-        const conversations: IConversation[] = await ConversationDatabase.getAllConversationsForUser(user);
-        res.status(200).json({user: "salut"} );
-    } catch (error) {
-        res.status(500).send({ message: error});
-    }
+    // console.log("salut2");
+    // try {
+    //     const user: MongooseID[] = req.body;
+    //     const conversations: IConversation[] = await ConversationDatabase.getAllConversationsForUser(user);
+    //     res.status(200).json({user: "salut"} );
+    // } catch (error) {
+    //     res.status(500).send({ message: error});
+    // }
+
+    return res.status(200).json({user: "salut"} );
 }
 
 async function getConversationById(req: Request, res: Response){
