@@ -7,7 +7,6 @@ import { MongooseID } from '../types';
 // revoir les fonctions à exporter (faire shéma de la requete http) 
 
 async function getConversationWithParticipants (req: Request, res: Response) {
-    console.log("salut");
     try {
         const particicpants: MongooseID[] = req.body; 
         const conversations: IConversation[]  = await ConversationDatabase.getConversationWithParticipants(particicpants);
@@ -18,16 +17,13 @@ async function getConversationWithParticipants (req: Request, res: Response) {
 }
 
 async function getAllConversationsForUser(req: Request, res: Response) {
-    // console.log("salut2");
-    // try {
-    //     const user: MongooseID[] = req.body;
-    //     const conversations: IConversation[] = await ConversationDatabase.getAllConversationsForUser(user);
-    //     res.status(200).json({user: "salut"} );
-    // } catch (error) {
-    //     res.status(500).send({ message: error});
-    // }
-
-    return res.status(200).json({user: "salut"} );
+    try {
+        const user: MongooseID = req.body.user;
+        const conversations: IConversation[] = await ConversationDatabase.getAllConversationsForUser(user);
+        res.status(200).json(conversations);
+    } catch (error) {
+        res.status(500).send({ message: error});
+    }
 }
 
 async function getConversationById(req: Request, res: Response){
@@ -45,17 +41,26 @@ async function getConversationById(req: Request, res: Response){
 }
 
 async function createConversation(req: Request, res: Response) {
-  
-    console.log("La route a bien appelé la fonction maFonction()");
-
-    res.status(200).send("Réponse de maFonction()");
+     const newConversation = new Conversation({
+        participants: req.body.concernedUsersIds,
+        messages: null,
+        title: "nouvelle Conversation",
+        lastUpdate: new Date().toISOString(),
+        seen: new Map()
+    });
+    try {
+        const savedConversation: IConversation = await ConversationDatabase.createConversation(newConversation)
+        res.status(200).json(savedConversation);
+    } catch (error) {
+        res.status(500).json(error)
+    }
 }
 
 async function addMessageToConversation(req: Request, res: Response){
     try {
         const update: Partial<IConversation> = {messages: req.body.messages};
-        const conversation: IConversation | null = await Conversation.findByIdAndUpdate(req.params.id, update);
-        
+        const conversation: IConversation | null = await ConversationDatabase.addMessageToConversation(req.params.id, update);
+
         if (conversation === null) {
             return res.status(404).json({ message: 'Id not found.' });
         } 
@@ -83,13 +88,13 @@ async function setConversationSeenForUserAndMessage(req: Request, res: Response)
 
 async function deleteConversation(req: Request, res: Response){
     try {
-        const newConversation: IConversation | null = await req.app.locals.conversationDatabase.getConversationById(req.params.id);
+        const newConversation: IConversation | null = await ConversationDatabase.getConversationById(req.params.id);
 
         if (newConversation === null) {
             return res.status(404).json({ message: 'Id not found.' });
         }  
 
-        const deletedConversation: IConversation | null = await req.app.locals.conversationDatabase.deleteConversation(newConversation);
+        const deletedConversation: IConversation | null = await ConversationDatabase.deleteConversation(newConversation);
 
         res.status(200).json(deletedConversation);
     } catch (error) {

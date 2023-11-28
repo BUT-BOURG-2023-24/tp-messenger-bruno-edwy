@@ -16,7 +16,12 @@ async function getConversationWithParticipants(participants: MongooseID[]){
 }
 
 async function getAllConversationsForUser(particicpant: MongooseID) {
-    
+    try {
+        const conversations: IConversation[] = await Conversation.find({" particicpants": particicpant});
+        return conversations;
+    } catch (error) {
+        return error;
+    }
 }
 
 async function getConversationById(idConversation: MongooseID){
@@ -30,17 +35,18 @@ async function getConversationById(idConversation: MongooseID){
 }
 
 async function createConversation(conversation: IConversation ) {
-   
+    try {
+        const savedConversation: IConversation = await conversation.save();
+        return savedConversation;
+    } catch (error) {
+        return error;
+    }
 }
 
 async function addMessageToConversation(idConversation: MongooseID ,messages: string[]){
     try {
         const update: Partial<IConversation> = {messages: messages};
         const conversation: IConversation | null = await Conversation.findByIdAndUpdate(idConversation, update);
-        
-        if (conversation === null) {
-            return 'Id not found.';
-        } 
 
         return conversation;
     } catch (error) {
