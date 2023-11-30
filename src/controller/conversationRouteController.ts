@@ -1,6 +1,6 @@
 import { Mongoose } from 'mongoose';
 import Conversation, {IConversation}  from '../database/Mongo/Models/ConversationModel'
-// import { getConversationWithParticipants } from '../database/Mongo/controllers/conversationDatabaseController'
+const ConversationDatabase = require('../database/Mongo/controllers/conversationDatabaseController');
 import { Request, Response } from 'express';
 import { MongooseID } from '../types';
 // import { getConversationWithParticipants } from '../database/Mongo/controllers/conversationDatabaseController';
@@ -12,9 +12,8 @@ import getConversationWithParticipantsI from '../database/Mongo/controllers/conv
 
 async function getConversationWithParticipants (req: Request, res: Response) {
     try {
-        //participants: MongooseID[];
         const particicpants: MongooseID[] = req.body; 
-        const conversations: IConversation[]  = await getConversationWithParticipantsI(particicpants);
+        const conversations: IConversation[]  = await ConversationDatabase.getConversationWithParticipants(particicpants);
         res.status(200).json(conversations);
     } catch (error) {
         res.status(500).send({ message: error});
@@ -23,7 +22,8 @@ async function getConversationWithParticipants (req: Request, res: Response) {
 
 async function getAllConversationsForUser(req: Request, res: Response) {
     try {
-        const conversations: IConversation[] = await Conversation.find({" particicpants": req.body});
+        const user: MongooseID = req.body.user;
+        const conversations: IConversation[] = await ConversationDatabase.getAllConversationsForUser(user);
         res.status(200).json(conversations);
     } catch (error) {
         res.status(500).send({ message: error});
@@ -45,27 +45,26 @@ async function getConversationById(req: Request, res: Response){
 }
 
 async function createConversation(req: Request, res: Response) {
-    const newConversation = new Conversation({
-        participants: req.body.particicpants,
-        messages: req.body.messages,
-        title: req.body.title,
-        lastUpdate: req.body.lastUpdate,
-        seen: req.body.seen
+     const newConversation = new Conversation({
+        participants: req.body.concernedUsersIds,
+        messages: null,
+        title: "nouvelle Conversation",
+        lastUpdate: new Date().toISOString(),
+        seen: new Map()
     });
-
     try {
-        const savedConversation: IConversation = await newConversation.save();
+        const savedConversation: IConversation = await ConversationDatabase.createConversation(newConversation)
         res.status(200).json(savedConversation);
     } catch (error) {
-        res.status(500).json({message: error})
+        res.status(500).json(error)
     }
 }
 
 async function addMessageToConversation(req: Request, res: Response){
     try {
         const update: Partial<IConversation> = {messages: req.body.messages};
-        const conversation: IConversation | null = await Conversation.findByIdAndUpdate(req.params.id, update);
-        
+        const conversation: IConversation | null = await ConversationDatabase.addMessageToConversation(req.params.id, update);
+
         if (conversation === null) {
             return res.status(404).json({ message: 'Id not found.' });
         } 
@@ -93,13 +92,15 @@ async function setConversationSeenForUserAndMessage(req: Request, res: Response)
 
 async function deleteConversation(req: Request, res: Response){
     try {
-        const conversation: IConversation | null = await Conversation.findByIdAndDelete(req.params.id);
+        const newConversation: IConversation | null = await ConversationDatabase.getConversationById(req.params.id);
 
-        if (conversation === null) {
+        if (newConversation === null) {
             return res.status(404).json({ message: 'Id not found.' });
         }  
 
-        res.status(200).json(conversation);
+        const deletedConversation: IConversation | null = await ConversationDatabase.deleteConversation(newConversation);
+
+        res.status(200).json(deletedConversation);
     } catch (error) {
         res.status(500).json({ message: error });
     }

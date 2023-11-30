@@ -1,5 +1,6 @@
 import Message, {IMessage}  from '../database/Mongo/Models/MessageModel'
 import { Request, Response } from 'express';
+const MessageDatabase = require('../database/Mongo/controllers/messageDatabaseController');
 
 
 async function createMessage(req: Request, res: Response){
@@ -15,10 +16,10 @@ async function createMessage(req: Request, res: Response){
     });
 
     try {
-        const savedMessage: IMessage = await newMessage.save();
+        const savedMessage: IMessage = await MessageDatabase.createMessage(newMessage);
         res.status(200).json(savedMessage);
     } catch (error) {
-        res.status(500).json({message: error})
+        res.status(500).json({message: error});
     }
 }
 

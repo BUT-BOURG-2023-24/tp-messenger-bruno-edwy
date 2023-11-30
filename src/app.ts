@@ -3,7 +3,6 @@ import express from "express";
 import { Server } from "socket.io";
 import { Database } from "./database/database";
 import { SocketController } from "./socket/socketController";
-import ConversationModel from "./database/Mongo/Models/ConversationModel";
 import conversationRoutes from "./routes/conversationRoutes"
 
 import authMiddleware from './middleware/authMiddleware';
@@ -14,6 +13,7 @@ function makeApp(database: Database)
 {
 	app.locals.database = database;
 
+	
 	app.locals.database.connect();
 
 	const server = http.createServer(app);

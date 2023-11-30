@@ -1,5 +1,6 @@
 import config from "../config";
 const mongoose = require('mongoose');
+import * as conversationDataBaseController from './Mongo/controllers/conversationDatabaseController'
 
 class Database 
 {
@@ -18,7 +19,8 @@ class Database
             console.log("error while connecting to DB", error)
         });
 	}
+
 }
 
-export default Database;
+export default Database ;
 export type { Database };

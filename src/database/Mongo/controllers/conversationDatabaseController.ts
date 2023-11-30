@@ -1,25 +1,9 @@
 import { MongooseID } from '../../../types';
 import Conversation, {IConversation}  from '../Models/ConversationModel'
 
-// async function getConversationWithParticipantsI (participants: MongooseID[]) {
-//     try {
-//         const conversation: IConversation  | null = await Conversation.findOne({"participants": {"$size" : participants.length, "$all": participants}});
-
-//         if (conversation === null) {
-//             return 'Id not found.';
-//         } 
-
-//         return conversation;
-//     } catch (error) {
-//         return error;
-//     }
-// }
-
-async function getConversationWithParticipantsI(participants: MongooseID[]): Promise<IConversation[]> {
+async function getConversationWithParticipants(participants: MongooseID[]){
     try {
-        const conversation: IConversation | null = await Conversation.findOne({
-            "participants": { "$size": participants.length, "$all": participants }
-        });
+        const conversation: IConversation  | null = await Conversation.findOne({"participants": {"$size" : participants.length, "$all": participants}});
 
         if (conversation === null) {
             return []; // Return an empty array if conversation is not found
@@ -44,17 +28,13 @@ async function getConversationById(idConversation: MongooseID){
     try {
         const conversation: IConversation | null = await Conversation.findById(idConversation);
 
-        if (conversation === null) {
-            return 'Id not found.';
-        } 
-
         return conversation;
     } catch (error) {
         return error;
     }
 }
 
-async function createConversation(conversation: IConversation) {
+async function createConversation(conversation: IConversation ) {
     try {
         const savedConversation: IConversation = await conversation.save();
         return savedConversation;
@@ -67,10 +47,6 @@ async function addMessageToConversation(idConversation: MongooseID ,messages: st
     try {
         const update: Partial<IConversation> = {messages: messages};
         const conversation: IConversation | null = await Conversation.findByIdAndUpdate(idConversation, update);
-        
-        if (conversation === null) {
-            return 'Id not found.';
-        } 
 
         return conversation;
     } catch (error) {
@@ -93,13 +69,13 @@ async function setConversationSeenForUserAndMessage(idConversation: MongooseID ,
     }
 }
 
-async function deleteConversation(idConversation: MongooseID){
+async function deleteConversation(conversation : IConversation){
     try {
-        const conversation: IConversation | null = await Conversation.findByIdAndDelete(idConversation);
+        const deletedConversation: IConversation | null = await Conversation.findByIdAndDelete(conversation);
 
-        if (conversation === null) {
+       /* if (conversation === null) {
             return 'Id not found.';
-        }  
+        }  */
 
         return conversation;
     } catch (error) {

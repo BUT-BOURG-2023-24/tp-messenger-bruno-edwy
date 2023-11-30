@@ -1,5 +1,5 @@
 import { makeApp } from "./app";
-import  Database from "./database/database";
+import  Database  from "./database/database";
 import config from "./config";
 
 let DBInstance = new Database(
