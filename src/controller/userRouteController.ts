@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import MongoUserDatabase from "../database/Mongo/controllers/userDataBaseController";
 const picture = require("../pictures");
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 	
 async function login(req: Request, res: Response) {
@@ -36,18 +37,18 @@ async function login(req: Request, res: Response) {
         // Your logic to create a user goes here
 
         // Assuming user creation was successful
-
-        const jwt = require('jsonwebtoken');
         const secretKey = 'deft'; // Remplacez par votre clé secrète JWT
-        const token = jwt.sign({}, secretKey, { expiresIn: '1h' }); // 1h d'expiration, ajustez selon vos besoins
-        console.log(token);
 
-        const message = 'User created successfully.';
+        // const message = 'User created successfully.';
         const user = await MongoUserDatabase.getUserByNameDatabase(req.body.username)
+        
         if (user !== null){
             // console.log(await MongoUserDatabase.getUserByNameDatabase(req.body.username));
             // let user = await MongoUserDatabase.getUserByNameDatabase(req.body.username)
             // console.log(user);
+            const userId = user?.id;
+            const token = jwt.sign({userId}, secretKey, { expiresIn: '1h' }); // 1h d'expiration, ajustez selon vos besoins
+            console.log(token);
             if(await bcrypt.compare(req.body.password, user.password)){
                 res.status(200).json({isNewUser: false, user: user, token: token});
             }else{
@@ -64,6 +65,9 @@ async function login(req: Request, res: Response) {
             await MongoUserDatabase.createUserDatabase(obj);
             let user = await MongoUserDatabase.getUserByNameDatabase(req.body.username)
             console.log(user);
+            const userId = user?.id;
+            const token = jwt.sign({userId}, secretKey, { expiresIn: '1h' }); // 1h d'expiration, ajustez selon vos besoins
+            console.log(token);
             // res.status(200).json({ message });
             res.status(200).json({ isNewUser: true, user: user, token: token });
         } 
