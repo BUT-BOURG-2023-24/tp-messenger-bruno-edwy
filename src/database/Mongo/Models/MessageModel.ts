@@ -54,7 +54,6 @@ const MessageSchema: Schema<IMessage> = new Schema<IMessage>({
 	{
 		type: Map,
 		of: String,
-		required: true,
 		enum: ["HAPPY", "SAD", "THUMBSUP", "THUMPSDOWN", "LOVE"]
 	}
 });

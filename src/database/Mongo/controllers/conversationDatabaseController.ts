@@ -1,5 +1,8 @@
+import { checkPreferences } from 'joi';
 import { MongooseID } from '../../../types';
 import Conversation, {IConversation}  from '../Models/ConversationModel'
+import Message, {IMessage}  from '../Models/MessageModel'
+import { UpdateQuery } from 'mongoose'
 
 async function getConversationWithParticipants(participants: MongooseID[]){
     try {
@@ -43,10 +46,11 @@ async function createConversation(conversation: IConversation ) {
     }
 }
 
-async function addMessageToConversation(idConversation: MongooseID ,messages: string[]){
+async function addMessageToConversation(idConversation: MongooseID ,message: IMessage){
     try {
-        const update: Partial<IConversation> = {messages: messages};
-        const conversation: IConversation | null = await Conversation.findByIdAndUpdate(idConversation, update);
+        const update: UpdateQuery<IConversation> = { $push: { messages: message } };
+        console.log(update)
+        const conversation: IConversation | null = await Conversation.findByIdAndUpdate(idConversation, update, { new: true });
 
         return conversation;
     } catch (error) {
