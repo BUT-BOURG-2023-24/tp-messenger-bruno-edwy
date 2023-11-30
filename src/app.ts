@@ -6,6 +6,8 @@ import { SocketController } from "./socket/socketController";
 import ConversationModel from "./database/Mongo/Models/ConversationModel";
 import conversationRoutes from "./routes/conversationRoutes"
 
+import authMiddleware from './middleware/authMiddleware';
+
 const app = express();
 
 function makeApp(database: Database) 
@@ -19,7 +21,10 @@ function makeApp(database: Database)
 	app.use('/conversations', conversationRoutes);
 
 	const userRoutes = require('./routes/userRoutes');
-	app.use('/users', userRoutes);
+	// app.use('/users', userRoutes, authMiddleware);
+
+	// app.use('/users', authMiddleware); // Appliquer le middleware à toutes les routes sous /users
+	app.use('/users', userRoutes); // Utiliser le fichier de routes
 
 	const io = new Server(server, { cors: { origin: "*" } });
 	let socketController = new SocketController(io, database);

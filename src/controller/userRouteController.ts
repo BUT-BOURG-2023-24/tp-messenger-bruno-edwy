@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 import User, { IUser } from "../database/Mongo/Models/UserModel";
 import { Request, Response } from "express";
 import MongoUserDatabase from "../database/Mongo/controllers/userDataBaseController";
+const picture = require("../pictures");
+const bcrypt = require('bcrypt');
 
 	
 async function login(req: Request, res: Response) {
@@ -34,24 +36,36 @@ async function login(req: Request, res: Response) {
         // Your logic to create a user goes here
 
         // Assuming user creation was successful
-        const obj = new User({
-      
-          username: req.body.username,
-          password: req.body.password,
-          profilePicId: req.body.profilePicId
-        
-        });
+
+        const jwt = require('jsonwebtoken');
+        const secretKey = 'deft'; // Remplacez par votre clé secrète JWT
+        const token = jwt.sign({}, secretKey, { expiresIn: '1h' }); // 1h d'expiration, ajustez selon vos besoins
+        console.log(token);
+
         const message = 'User created successfully.';
-        if (await MongoUserDatabase.getUserByNameDatabase(req.body.username) !== null){
+        const user = await MongoUserDatabase.getUserByNameDatabase(req.body.username)
+        if (user !== null){
             // console.log(await MongoUserDatabase.getUserByNameDatabase(req.body.username));
-            let user = await MongoUserDatabase.getUserByNameDatabase(req.body.username)
-            console.log(user);
-            res.status(200).json({message: "utilisateur existe déjà", user: user});
+            // let user = await MongoUserDatabase.getUserByNameDatabase(req.body.username)
+            // console.log(user);
+            if(await bcrypt.compare(req.body.password, user.password)){
+                res.status(200).json({isNewUser: false, user: user, token: token});
+            }else{
+                res.status(401).json({error: "username ou password incorrects"})
+            } 
         } else{
+            const obj = new User({
+      
+                username: req.body.username,
+                password: await bcrypt.hash(req.body.password, 5),
+                profilePicId: picture.pickRandom()
+              
+            });
             await MongoUserDatabase.createUserDatabase(obj);
             let user = await MongoUserDatabase.getUserByNameDatabase(req.body.username)
+            console.log(user);
             // res.status(200).json({ message });
-            res.status(200).json({ user: user });
+            res.status(200).json({ isNewUser: true, user: user, token: token });
         } 
         
     } catch (error) {

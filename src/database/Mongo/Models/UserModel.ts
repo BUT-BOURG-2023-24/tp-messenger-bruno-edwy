@@ -21,8 +21,7 @@ const userSchema: Schema<IUser> = new Schema<IUser>({
 	},
 	profilePicId:
 	{
-		type: String,
-		required: true
+		type: String
 	}
 });
 
