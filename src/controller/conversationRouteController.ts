@@ -43,9 +43,10 @@ async function getConversationById(req: Request, res: Response){
 }
 
 async function createConversation(req: Request, res: Response) {
+    const tabMessages: IMessage[] = [];
      const newConversation = new Conversation({
         participants: req.body.concernedUsersIds,
-        messages: null,
+        messages: tabMessages,
         title: "nouvelle Conversation",
         lastUpdate: new Date().toISOString(),
         seen: new Map()
