@@ -8,8 +8,6 @@ import { MongooseID } from '../types';
 // import { getConversationWithParticipants } from '../database/Mongo/controllers/conversationDatabaseController';
 // const ConversationController = require('../database/Mongo/controllers/conversationDatabaseController');
 
-import getConversationWithParticipantsI from '../database/Mongo/controllers/conversationDatabaseController';
-
 // revoir les fonctions à exporter (faire shéma de la requete http) 
 
 async function getConversationWithParticipants (req: Request, res: Response) {
@@ -69,8 +67,8 @@ async function addMessageToConversation(req: Request, res: Response){
 
         if (conversation === null) {
             return res.status(404).json({ message: 'Conversation Id not found.' });
-        } 
-
+        }
+        
         res.status(200).json(conversation);
     } catch (error) {
         res.status(500).json({ message: error });
@@ -84,7 +82,7 @@ async function setConversationSeenForUserAndMessage(req: Request, res: Response)
         
         if (conversation === null) {
             return res.status(404).json({ message: 'Id not found.' });
-        } 
+        }
 
         res.status(200).json(conversation);
     } catch (error) {
