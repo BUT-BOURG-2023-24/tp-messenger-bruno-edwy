@@ -1,9 +1,10 @@
 import mongoose, { Schema, Document } from "mongoose";
 import { MongooseID } from "../../../types";
+import Message, {IMessage}  from '../Models/MessageModel'
 
 export interface IConversation extends Document {
 	participants:MongooseID[],
-	messages:String[],
+	messages:IMessage[],
 	title:String,
 	lastUpdate:Date,
 	seen: Map<MongooseID, MongooseID>,
@@ -17,7 +18,8 @@ const conversationSchema: Schema<IConversation> = new Schema<IConversation>({
 	}],
 	messages:
 	[{
-		type: String,
+		type: Schema.ObjectId,
+		ref: 'Message',
 		required: true
 	}],
 	title:

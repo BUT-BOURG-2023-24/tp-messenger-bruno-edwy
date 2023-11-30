@@ -1,6 +1,8 @@
 import { Mongoose } from 'mongoose';
 import Conversation, {IConversation}  from '../database/Mongo/Models/ConversationModel'
+import Message, {IMessage} from '../database/Mongo/Models/MessageModel'
 const ConversationDatabase = require('../database/Mongo/controllers/conversationDatabaseController');
+const MessageDatabase = require('../database/Mongo/controllers/messageDatabaseController');
 import { Request, Response } from 'express';
 import { MongooseID } from '../types';
 // import { getConversationWithParticipants } from '../database/Mongo/controllers/conversationDatabaseController';
@@ -62,11 +64,11 @@ async function createConversation(req: Request, res: Response) {
 
 async function addMessageToConversation(req: Request, res: Response){
     try {
-        const update: Partial<IConversation> = {messages: req.body.messages};
-        const conversation: IConversation | null = await ConversationDatabase.addMessageToConversation(req.params.id, update);
+        const newMessage: IMessage | null = await MessageDatabase.createMessage(req.params.id, req.body.content);
+        const conversation: IConversation | null = await ConversationDatabase.addMessageToConversation(req.params.id, newMessage);
 
         if (conversation === null) {
-            return res.status(404).json({ message: 'Id not found.' });
+            return res.status(404).json({ message: 'Conversation Id not found.' });
         } 
 
         res.status(200).json(conversation);

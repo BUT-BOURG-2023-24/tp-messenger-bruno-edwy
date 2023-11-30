@@ -1,7 +1,18 @@
+import { Mongoose } from 'mongoose';
 import { MongooseID } from '../../../types';
-import Conversation, {IMessage}  from '../Models/MessageModel'
+import Message, {IMessage}  from '../Models/MessageModel'
 
-async function createMessage(newMessage: IMessage){
+async function createMessage(idConversation: MongooseID, content : String){
+
+    const newMessage: IMessage  = new Message({
+        conversationId : idConversation,
+        from: idConversation, //à modifier
+        content: content,
+        postedAt: new Date().toISOString(),
+        edited: false,
+        deleted: false,
+    });
+
     try {
         const savedMessage: IMessage = await newMessage.save();
         return savedMessage
