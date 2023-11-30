@@ -87,14 +87,12 @@ async function deleteConversation(conversation : IConversation){
     }
 }
 
-// module.exports = {
-//     getConversationWithParticipantsI,
-//     getAllConversationsForUser,
-//     getConversationById,
-//     createConversation,
-//     addMessageToConversation,
-//     setConversationSeenForUserAndMessage,
-//     deleteConversation,
-// };
-
-export default getConversationWithParticipantsI;
+module.exports = {
+    getConversationWithParticipants,
+    getAllConversationsForUser,
+    getConversationById,
+    createConversation,
+    addMessageToConversation,
+    setConversationSeenForUserAndMessage,
+    deleteConversation,
+};
