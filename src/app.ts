@@ -18,6 +18,7 @@ function makeApp(database: Database)
 
 	const server = http.createServer(app);
 	app.use(express.json());
+	app.use('/conversations', authMiddleware)
 	app.use('/conversations', conversationRoutes);
 
 	const userRoutes = require('./routes/userRoutes');

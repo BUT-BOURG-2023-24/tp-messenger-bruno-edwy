@@ -22,7 +22,7 @@ async function getConversationWithParticipants (req: Request, res: Response) {
 
 async function getAllConversationsForUser(req: Request, res: Response) {
     try {
-        const user: MongooseID = req.body.user;
+        const user: MongooseID = req.params.userId;
         const conversations: IConversation[] = await ConversationDatabase.getAllConversationsForUser(user);
         res.status(200).json(conversations);
     } catch (error) {
