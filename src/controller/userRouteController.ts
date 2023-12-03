@@ -84,43 +84,36 @@ async function getUserByName(req: Request, res: Response) {
 	
     try {
       
-      const user: IUser | null  = await User.findOne({username: req.body.username});
-      
-      // You can use findById, findOne({ name: 'name' }), etc. as needed
-      
-   
-      
+      const user: IUser | null  = await MongoUserDatabase.getUserByNameDatabase(req.body.name);
       res.status(200).json(user);
       
     } catch (error) {
-      
-      res.status(500).json({ message: error });
-      
+      res.status(500).json({ message: error }); 
     }
       
 };
 
-function getUserById(req: Request, res: Response){
+async function getUserById(req: Request, res: Response){
 
-    User.findById(req.params.id, (err :any, user :any) => {
-        if(err){
-            res.send(err);
-        }
-        res.json(user);
-    });
-
+    try {
+      
+        const user: IUser | null  = await MongoUserDatabase.getUserByIdDatabase(req.body.id); 
+        res.status(200).json(user);
+        
+      } catch (error) {
+        res.status(500).json({ message: error });
+      }
 }
 
-function getUsersByIds(req: Request, res: Response){
-
-    User.find({
-        '_id': { $in: [
-            req.body.ids
-        ]}
-    }, function(err: any, users :any[]){
-        console.log(users);
-    });
-
+async function getUsersByIds(req: Request, res: Response){
+    try {
+      
+        const user: IUser[] | null  = await MongoUserDatabase.getUsersByIdsDatabase(req.body.ids); 
+        res.status(200).json(user);
+        
+      } catch (error) {
+        res.status(500).json({ message: error });
+      }
 }
 
 function online(){

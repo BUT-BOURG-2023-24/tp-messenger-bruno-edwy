@@ -1,3 +1,4 @@
+import { MongooseID } from "../../../types";
 import User, {IUser}  from "../Models/UserModel";
 const bcrypt = require('bcrypt');
 
@@ -25,5 +26,23 @@ async function getUserByNameDatabase(name:string) {
     }
 }
 
+async function getUserByIdDatabase(id: MongooseID){
+    try {
+        const user = await User.findById(id);
+        return user;
+    } catch (error) {
+        return null;
+    }
+}
+
+async function getUsersByIdsDatabase(ids: MongooseID[]){
+    try {
+        const users = User.find({ _id: { $in: ids } });
+        return users;
+    } catch (error) {
+        return null;
+    }
+} 
+
 // module.exports = { createUserDatabase };
-export default {createUserDatabase, getUserByNameDatabase};
+export default {createUserDatabase, getUserByNameDatabase, getUserByIdDatabase, getUsersByIdsDatabase};
