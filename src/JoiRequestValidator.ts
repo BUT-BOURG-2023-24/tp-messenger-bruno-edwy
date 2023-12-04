@@ -15,6 +15,10 @@ interface JoiRouteValidator
 
 class JoiRequestValidator 
 {
+	private bodyFormat = joi.object({
+		id: joi.string().alphanum().min(3).max(30).required()
+	});
+
 	validators: JoiRouteValidator[] = 
 	[
 		// EXEMPLE
@@ -23,12 +27,20 @@ class JoiRequestValidator
 		// 	method: "POST",
 		// 	validatorSchema: bodyFormat,
 		// }
+		{
+			route: "/test",
+			method: "GET",
+			validatorSchema: this.bodyFormat,
+		}
 	];
+
+	
 
 	validate(request: Request): JoiRequestValidatorResponse 
 	{
 		// request.baseUrl contient l'URL de base, avant application des middlewares.
 		// request.route.path contient l'URL que vous déclarez dans votre middleware de routage.
+		// console.log('Request:', request.route);
 		console.log(request.baseUrl);
 		console.log(request.route.path);
 
@@ -37,6 +49,13 @@ class JoiRequestValidator
 
 			Trouver dans la liste de validators, le validator qui correspond à la route de la requête.
 		*/
+		const routeValidator = this.validators.find(
+			(validator) =>
+			validator.route === request.route.path &&
+			validator.method === request.method
+		);
+
+		console.log(routeValidator);
 
 		/* 
 			ETAPE 2:
@@ -50,6 +69,17 @@ class JoiRequestValidator
 				=> Si le body est invalide
 					=> retourner un objet avec une clé error contenant les details de l'erreur.
 		*/
+
+		if (!routeValidator) {
+			return {};
+		}
+	  
+		const { error } = routeValidator.validatorSchema.validate(request.body);
+	  
+		if (error) {
+			return { error: error.details[0].message };
+		}
+
 		return {};
 	}
 }

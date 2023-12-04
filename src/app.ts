@@ -6,6 +6,7 @@ import { SocketController } from "./socket/socketController";
 import conversationRoutes from "./routes/conversationRoutes"
 
 import authMiddleware from './middleware/authMiddleware';
+import joiValidator from "./middleware/joiValidator";
 
 const app = express();
 
@@ -17,6 +18,7 @@ function makeApp(database: Database)
 	app.locals.database.connect();
 
 	const server = http.createServer(app);
+
 	app.use(express.json());
 	app.use('/conversations', authMiddleware)
 	app.use('/conversations', conversationRoutes);
@@ -31,6 +33,8 @@ function makeApp(database: Database)
 	let socketController = new SocketController(io, database);
 
 	app.locals.socketController = socketController;
+
+	app.use(joiValidator);
 
 	return { app, server };
 }
