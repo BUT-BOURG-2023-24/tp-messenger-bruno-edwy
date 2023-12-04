@@ -20,7 +20,7 @@ describe('USERS', () =>
 	test("Login unexisting user", async () => {
 		const response = await supertest(app)
             .post("/users/login")
-            .send({ username: "nonexistentuser", password: "somepassword" });
+            .send({ username: "test3", password: "testpwd3" });
 
         expect(response.status).toBe(200); // Assuming you return a 200 status for non-existing users
         // Add more assertions based on your application's behavior
@@ -29,7 +29,7 @@ describe('USERS', () =>
 	test("Login existing user", async () => {
 		const response = await supertest(app)
             .post("/users/login")
-            .send({ username: "existinguser", password: "correctpassword" });
+            .send({ username: "test2", password: "testpwd2" });
 
         expect(response.status).toBe(200); // Assuming you return a 200 status for successful logins
         // Add more assertions based on your application's behavior
@@ -38,7 +38,7 @@ describe('USERS', () =>
 	test("Login wrong password", async () => {
 		const response = await supertest(app)
             .post("/users/login")
-            .send({ username: "existinguser", password: "correctpasswo" });
+            .send({ username: "test2", password: "wrongggg" });
 
         expect(response.status).toBe(401); // Assuming you return a 200 status for successful logins
         // Add more assertions based on your application's behavior
