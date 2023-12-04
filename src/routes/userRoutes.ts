@@ -8,7 +8,7 @@ const userRouteController = require('../controller/userRouteController');
 // router.post('/users/login', userController.login);
 // router.get('/users/:id', userController.getUserById);
 
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', joiValidator, async (req: Request, res: Response) => {
   await userRouteController.login(req, res);
 });
 
@@ -16,7 +16,7 @@ router.get('/online', async () => {
   await userRouteController.online();
 });
 
-router.get('/test', joiValidator, async (req: Request, res: Response) => {
+router.get('/test', async (req: Request, res: Response) => {
   await userRouteController.getUsersByIds(req, res);
 });
 

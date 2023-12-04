@@ -120,4 +120,21 @@ function online(){
     
 }
 
-module.exports = {login, getUserByName, getUserById, getUsersByIds, online};
+async function createUser(username: string, password: string){
+    try {
+        
+        const obj = new User({
+      
+            username: username,
+            password: await bcrypt.hash(password, 5),
+            profilePicId: picture.pickRandom()
+          
+        });
+        await MongoUserDatabase.createUserDatabase(obj);
+        
+    } catch (error) {
+        return error;;
+    }
+}
+
+module.exports = {login, getUserByName, getUserById, getUsersByIds, online, createUser};

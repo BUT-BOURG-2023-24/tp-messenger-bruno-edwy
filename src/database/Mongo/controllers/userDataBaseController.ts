@@ -9,7 +9,7 @@ async function createUserDatabase (user :IUser) {
         // user.password = hash;
         await User.insertMany(user);
     } catch (error) {
-        throw error;
+        return error;
     }
     
     // await if(User.findOne({})){
