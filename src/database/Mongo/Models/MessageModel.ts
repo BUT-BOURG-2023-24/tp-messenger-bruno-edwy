@@ -21,7 +21,8 @@ const MessageSchema: Schema<IMessage> = new Schema<IMessage>({
 	},
 	from:
 	{
-		type: String,
+		type: Schema.ObjectId,
+		ref: "User",
 		required: true,
 	},
 	content:
