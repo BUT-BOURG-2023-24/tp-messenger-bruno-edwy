@@ -35,14 +35,19 @@ async function getUserByIdDatabase(id: MongooseID){
     }
 }
 
-async function getUsersByIdsDatabase(ids: MongooseID[]){
+async function getUsersByIdsDatabase(ids: MongooseID[]) {
     try {
-        const users = User.find({ _id: { $in: ids } });
+        const users = await User.find({ _id: { $in: ids } });
+
         return users;
     } catch (error) {
-        return null;
+        return error;
     }
 } 
 
-// module.exports = { createUserDatabase };
-export default {createUserDatabase, getUserByNameDatabase, getUserByIdDatabase, getUsersByIdsDatabase};
+module.exports = {
+    createUserDatabase, 
+    getUserByNameDatabase,
+    getUserByIdDatabase, 
+    getUsersByIdsDatabase
+};

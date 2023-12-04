@@ -2,11 +2,11 @@ import { Mongoose } from 'mongoose';
 import { MongooseID } from '../../../types';
 import Message, {IMessage}  from '../Models/MessageModel'
 
-async function createMessage(idConversation: MongooseID, content : String){
+async function createMessage(idConversation: MongooseID, content : String, idFrom: MongooseID){
 
     const newMessage: IMessage  = new Message({
         conversationId : idConversation,
-        from: idConversation, //à modifier
+        from: idFrom,
         content: content,
         postedAt: new Date().toISOString(),
         edited: false,

@@ -19,7 +19,7 @@ function authMiddleware(req: Request, res: Response, next: NextFunction) {
         }
         console.log(decoded)
         // Si le token est valide, ajoutez les informations utilisateur décodées à la requête
-        req.params.userId = decoded.userId;
+        req.app.locals.userId = decoded.userId;
 
         // Passez au middleware suivant
         next();
