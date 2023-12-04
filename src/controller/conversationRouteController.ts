@@ -51,8 +51,8 @@ async function createConversation(req: Request, res: Response) {
 
 async function addMessageToConversation(req: Request, res: Response){
     try {
-        const newMessage: IMessage | null = await MessageDatabase.createMessage(req.params.id, req.body.content);
-        const conversation: IConversation | null = await ConversationDatabase.addMessageToConversation(req.params.id, newMessage, req.app.locals.userId);
+        const newMessage: IMessage | null = await MessageDatabase.createMessage(req.params.id, req.body.content, req.app.locals.userId);
+        const conversation: IConversation | null = await ConversationDatabase.addMessageToConversation(req.params.id, newMessage);
 
         if (conversation === null) {
             return res.status(404).json({ message: 'Conversation Id not found.' });
@@ -86,8 +86,3 @@ module.exports = {
     addMessageToConversation,
     deleteConversation,
 };
-
-// création conversation (users de la conv body), récupération conversations (id user de la requete), suppression d'une conversation (id URL)
-//, vue conversation, nouveau message dans une conversation
-/* createConversation(req: Request, res: Response), getconversations(req: Request, res: response), deleteConversation(req: Request, res: Response) 
-viewConversations, addMessage()*/

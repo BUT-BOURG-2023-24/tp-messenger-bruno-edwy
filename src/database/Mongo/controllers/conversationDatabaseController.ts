@@ -8,13 +8,9 @@ async function getConversationWithParticipants(participants: MongooseID[]){
     try {
         const conversation: IConversation  | null = await Conversation.findOne({"participants": {"$size" : participants.length, "$all": participants}});
 
-        if (conversation === null) {
-            return []; // Return an empty array if conversation is not found
-        }
-
-        return [conversation]; // Wrap the single conversation in an array
+        return conversation;
     } catch (error) {
-        return []; // Handle errors by returning an empty array or handle accordingly
+        return error;
     }
 }
 
@@ -49,7 +45,7 @@ async function createConversation(conversation: IConversation ) {
 async function addMessageToConversation(idConversation: MongooseID ,message: IMessage){
     try {
         const update: UpdateQuery<IConversation> = { $push: { messages: message } };
-        console.log(update)
+
         const conversation: IConversation | null = await Conversation.findByIdAndUpdate(idConversation, update, { new: true });
 
         return conversation;
@@ -76,10 +72,6 @@ async function setConversationSeenForUserAndMessage(idConversation: MongooseID ,
 async function deleteConversation(conversation : IConversation){
     try {
         const deletedConversation: IConversation | null = await Conversation.findByIdAndDelete(conversation);
-
-       /* if (conversation === null) {
-            return 'Id not found.';
-        }  */
 
         return conversation;
     } catch (error) {
