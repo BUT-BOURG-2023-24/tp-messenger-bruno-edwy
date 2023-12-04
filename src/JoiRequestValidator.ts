@@ -19,6 +19,11 @@ class JoiRequestValidator
 		id: joi.string().alphanum().min(3).max(30).required()
 	});
 
+	private login = joi.object({
+		username: joi.string().min(3).max(30).required(),
+		password: joi.string().min(8).max(30).required()
+	});
+
 	validators: JoiRouteValidator[] = 
 	[
 		// EXEMPLE
@@ -31,6 +36,10 @@ class JoiRequestValidator
 			route: "/test",
 			method: "GET",
 			validatorSchema: this.bodyFormat,
+		},{
+			route: "/login",
+			method: "POST",
+			validatorSchema: this.login,
 		}
 	];
 
@@ -55,7 +64,7 @@ class JoiRequestValidator
 			validator.method === request.method
 		);
 
-		console.log(routeValidator);
+		// console.log(routeValidator);
 
 		/* 
 			ETAPE 2:

@@ -18,15 +18,27 @@ describe('USERS', () =>
 	});
 
 	test("Login unexisting user", async () => {
+		const response = await supertest(app)
+            .post("/users/login")
+            .send({ username: "test3", password: "testpwd3" });
 
+        expect(response.status).toBe(200);
 	});
 
 	test("Login existing user", async () => {
+		const response = await supertest(app)
+            .post("/users/login")
+            .send({ username: "test2", password: "testpwd2" });
 
+        expect(response.status).toBe(200);
 	});
 
 	test("Login wrong password", async () => {
+		const response = await supertest(app)
+            .post("/users/login")
+            .send({ username: "test2", password: "wrongggg" });
 
+        expect(response.status).toBe(401);
 	});
 
 	test("GET active users", async () => {

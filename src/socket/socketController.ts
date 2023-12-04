@@ -1,5 +1,7 @@
 import type { Database } from "../database/database";
 import { Server } from "socket.io";
+const ConversationDatabase = require('../database/Mongo/controllers/conversationDatabaseController');
+import { IConversation } from "../database/Mongo/Models/ConversationModel"; 
 
 export class SocketController
 {
@@ -35,6 +37,31 @@ export class SocketController
 					Le paramètre roomName doit absolument être de type string,
 					si vous mettez un type number, cela ne fonctionnera pas.
 			*/
+
+            const userId = socket.handshake.headers.userid;
+
+            const userConversations = ConversationDatabase.getAllConversationsForUser(userId);
+			console.log(userConversations);
+            userConversations.forEach((conversation: IConversation) => {
+                const roomName = conversation.id.toString();
+                socket.join(roomName);
+            });
+
+            // Envoyer l'événement onConnected à tout le monde sauf le socket en question
+            const onConnectedEvent = {
+                userId: userId,
+            };
+            socket.broadcast.emit("@onConnected", onConnectedEvent);
+
+            // Gérer la déconnexion
+            socket.on("disconnect", () => {
+                // Envoyer l'événement onDisconnected à tout le monde sauf le socket en question
+                const onDisconnectedEvent = {
+                    userId: userId,
+                };
+                socket.broadcast.emit("@onDisconnected", onDisconnectedEvent);
+            });
+
 		});
 	}
 
@@ -56,6 +83,15 @@ export class SocketController
 
 		this.io.of("/").adapter.on("delete-room", (room) => {
 			console.log(`room ${room} was deleted`);
+		});
+
+		 // test
+		 this.io.of("/").adapter.on("connect", (socket) => {
+			console.log(`socket ${socket.id} connected`);
+		});
+	
+		this.io.of("/").adapter.on("disconnect", (socket) => {
+			console.log(`socket ${socket.id} disconnected`);
 		});
 	}
 }

@@ -13,7 +13,7 @@ class Database
 	
 	async connect()
 	{
-		mongoose.connect(config.DB_ADDRESS)
+		await mongoose.connect(config.DB_ADDRESS)
         .then(() => { console.log('Connected to DB!') })
         .catch((error: any) => {
             console.log("error while connecting to DB", error)

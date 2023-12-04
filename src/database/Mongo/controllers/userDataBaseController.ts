@@ -1,12 +1,11 @@
 import { MongooseID } from "../../../types";
 import User, {IUser}  from "../Models/UserModel";
-const bcrypt = require('bcrypt');
 
 async function createUserDatabase (user :IUser) {
     try {
         await User.insertMany(user);
     } catch (error) {
-        throw error;
+        return error;
     }
 }
 
