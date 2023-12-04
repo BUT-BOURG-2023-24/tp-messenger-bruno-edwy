@@ -18,9 +18,9 @@ async function getConversationWithParticipants(participants: MongooseID[]){
     }
 }
 
-async function getAllConversationsForUser(particicpant: MongooseID) {
+async function getAllConversationsForUser(participant: MongooseID) {
     try {
-        const conversations: IConversation[] = await Conversation.find({" particicpants": particicpant});
+        const conversations: IConversation[] = await Conversation.find({"participants": participant});
         return conversations;
     } catch (error) {
         return error;

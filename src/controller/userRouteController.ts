@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 import User, { IUser } from "../database/Mongo/Models/UserModel";
 import { Request, Response } from "express";
-import MongoUserDatabase from "../database/Mongo/controllers/userDataBaseController";
+const MongoUserDatabase = require("../database/Mongo/controllers/userDataBaseController");
 const picture = require("../pictures");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');

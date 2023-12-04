@@ -3,26 +3,14 @@ import Conversation, {IConversation}  from '../database/Mongo/Models/Conversatio
 import Message, {IMessage} from '../database/Mongo/Models/MessageModel'
 const ConversationDatabase = require('../database/Mongo/controllers/conversationDatabaseController');
 const MessageDatabase = require('../database/Mongo/controllers/messageDatabaseController');
+const UserDatabase = require('../database/Mongo/controllers/userDataBaseController');
 import { Request, Response } from 'express';
 import { MongooseID } from '../types';
-// import { getConversationWithParticipants } from '../database/Mongo/controllers/conversationDatabaseController';
-// const ConversationController = require('../database/Mongo/controllers/conversationDatabaseController');
-
-// revoir les fonctions à exporter (faire shéma de la requete http) 
-
-async function getConversationWithParticipants (req: Request, res: Response) {
-    try {
-        const particicpants: MongooseID[] = req.body; 
-        const conversations: IConversation[]  = await ConversationDatabase.getConversationWithParticipants(particicpants);
-        res.status(200).json(conversations);
-    } catch (error) {
-        res.status(500).send({ message: error});
-    }
-}
+import { IUser } from '../database/Mongo/Models/UserModel';
 
 async function getAllConversationsForUser(req: Request, res: Response) {
     try {
-        const user: MongooseID = req.params.userId;
+        const user: MongooseID = req.app.locals.userId;
         const conversations: IConversation[] = await ConversationDatabase.getAllConversationsForUser(user);
         res.status(200).json(conversations);
     } catch (error) {
@@ -30,30 +18,30 @@ async function getAllConversationsForUser(req: Request, res: Response) {
     }
 }
 
-async function getConversationById(req: Request, res: Response){
-    try {
-        const conversation: IConversation | null = await Conversation.findById(req.params.id);
-
-        if (conversation === null) {
-            return res.status(404).json({ message: 'Id not found.' });
-        } 
-
-        res.status(200).json(conversation);
-    } catch (error) {
-        res.status(500).send({ message: error});
-    }
-}
-
 async function createConversation(req: Request, res: Response) {
-    const tabMessages: IMessage[] = [];
-     const newConversation = new Conversation({
-        participants: req.body.concernedUsersIds,
-        messages: tabMessages,
-        title: "nouvelle Conversation",
-        lastUpdate: new Date().toISOString(),
-        seen: new Map()
-    });
-    try {
+    try {          
+        const tabMessages: IMessage[] = [];
+        let tabParticipants: MongooseID[] = req.body.concernedUsersIds;
+        tabParticipants.push(req.app.locals.userId);
+
+        let titre: String = "";
+
+        const listeParticipants: IUser[] | null = await UserDatabase.getUsersByIdsDatabase(tabParticipants);
+        if (listeParticipants !== null){
+            await Promise.all(listeParticipants.map(async (listeParticipant) => {
+                titre += listeParticipant.username + ', ';
+                console.log(titre);
+            }));
+        }
+
+        const newConversation = new Conversation({
+            participants: tabParticipants,
+            messages: tabMessages,
+            title: titre,
+            lastUpdate: new Date().toISOString(),
+            seen: new Map()
+        });
+    
         const savedConversation: IConversation = await ConversationDatabase.createConversation(newConversation)
         res.status(200).json(savedConversation);
     } catch (error) {
@@ -64,27 +52,12 @@ async function createConversation(req: Request, res: Response) {
 async function addMessageToConversation(req: Request, res: Response){
     try {
         const newMessage: IMessage | null = await MessageDatabase.createMessage(req.params.id, req.body.content);
-        const conversation: IConversation | null = await ConversationDatabase.addMessageToConversation(req.params.id, newMessage);
+        const conversation: IConversation | null = await ConversationDatabase.addMessageToConversation(req.params.id, newMessage, req.app.locals.userId);
 
         if (conversation === null) {
             return res.status(404).json({ message: 'Conversation Id not found.' });
         }
         
-        res.status(200).json(conversation);
-    } catch (error) {
-        res.status(500).json({ message: error });
-    }
-}
-
-async function setConversationSeenForUserAndMessage(req: Request, res: Response){
-    try {
-        const update: Partial<IConversation> = {seen: req.body.seen};
-        const conversation: IConversation | null = await Conversation.findByIdAndUpdate(req.params.id, update);
-        
-        if (conversation === null) {
-            return res.status(404).json({ message: 'Id not found.' });
-        }
-
         res.status(200).json(conversation);
     } catch (error) {
         res.status(500).json({ message: error });
@@ -108,12 +81,9 @@ async function deleteConversation(req: Request, res: Response){
 }
 
 module.exports = {
-    getConversationWithParticipants,
     getAllConversationsForUser,
-    getConversationById,
     createConversation,
     addMessageToConversation,
-    setConversationSeenForUserAndMessage,
     deleteConversation,
 };
 

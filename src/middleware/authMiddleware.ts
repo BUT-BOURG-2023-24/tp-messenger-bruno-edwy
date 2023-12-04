@@ -14,7 +14,9 @@ function authMiddleware(req: Request, res: Response, next: NextFunction) {
         if (err) {
             return res.status(401).json({ error: 'Token non autorisé.' });
         }
-        req.params.userId = decoded.userId;
+        console.log(decoded)
+        // Si le token est valide, ajoutez les informations utilisateur décodées à la requête
+        req.app.locals.userId = decoded.userId;
 
         next();
     });
