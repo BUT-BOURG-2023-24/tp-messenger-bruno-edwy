@@ -22,8 +22,7 @@ describe('USERS', () =>
             .post("/users/login")
             .send({ username: "test3", password: "testpwd3" });
 
-        expect(response.status).toBe(200); // Assuming you return a 200 status for non-existing users
-        // Add more assertions based on your application's behavior
+        expect(response.status).toBe(200);
 	});
 
 	test("Login existing user", async () => {
@@ -31,8 +30,7 @@ describe('USERS', () =>
             .post("/users/login")
             .send({ username: "test2", password: "testpwd2" });
 
-        expect(response.status).toBe(200); // Assuming you return a 200 status for successful logins
-        // Add more assertions based on your application's behavior
+        expect(response.status).toBe(200);
 	});
 
 	test("Login wrong password", async () => {
@@ -40,8 +38,7 @@ describe('USERS', () =>
             .post("/users/login")
             .send({ username: "test2", password: "wrongggg" });
 
-        expect(response.status).toBe(401); // Assuming you return a 200 status for successful logins
-        // Add more assertions based on your application's behavior
+        expect(response.status).toBe(401);
 	});
 
 	test("GET active users", async () => {

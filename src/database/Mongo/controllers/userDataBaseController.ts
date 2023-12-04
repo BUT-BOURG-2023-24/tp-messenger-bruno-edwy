@@ -1,20 +1,12 @@
 import { MongooseID } from "../../../types";
 import User, {IUser}  from "../Models/UserModel";
-const bcrypt = require('bcrypt');
 
 async function createUserDatabase (user :IUser) {
     try {
-        // console.log(user.password)
-        // let hash: string = await bcrypt.hash(user.password, 5);
-        // user.password = hash;
         await User.insertMany(user);
     } catch (error) {
         return error;
     }
-    
-    // await if(User.findOne({})){
-    //     User.insertMany(user);
-    // }
 }
 
 async function getUserByNameDatabase(name:string) {
@@ -44,5 +36,4 @@ async function getUsersByIdsDatabase(ids: MongooseID[]){
     }
 } 
 
-// module.exports = { createUserDatabase };
 export default {createUserDatabase, getUserByNameDatabase, getUserByIdDatabase, getUsersByIdsDatabase};

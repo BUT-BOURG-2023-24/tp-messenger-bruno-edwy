@@ -49,7 +49,6 @@ async function createConversation(conversation: IConversation ) {
 async function addMessageToConversation(idConversation: MongooseID ,message: IMessage){
     try {
         const update: UpdateQuery<IConversation> = { $push: { messages: message } };
-        console.log(update)
         const conversation: IConversation | null = await Conversation.findByIdAndUpdate(idConversation, update, { new: true });
 
         return conversation;

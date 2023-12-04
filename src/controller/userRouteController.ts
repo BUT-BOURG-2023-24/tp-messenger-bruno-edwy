@@ -8,47 +8,15 @@ const jwt = require('jsonwebtoken');
 
 	
 async function login(req: Request, res: Response) {
-	
-    // const obj = new User({
-      
-    //   username: req.body.username,
-    //   password: req.body.password,
-    //   profilePicId: req.body.profilePicId
-      
-    // });
-      
-   
-      
-    // try {
-      
-    //   // const savedObj: IUser = await obj.save();
-      
-   
-    //   // return res.status(200).json(savedObj);
-    //   return res.status(200).json({message: "coucou"});
-      
-    // } catch (error) {
-      
-    //   return res.status(500).json({ message: error });
-        
-    // }
 
     try {
-        // Your logic to create a user goes here
+        const secretKey = 'deft';
 
-        // Assuming user creation was successful
-        const secretKey = 'deft'; // Remplacez par votre clé secrète JWT
-
-        // const message = 'User created successfully.';
         const user = await MongoUserDatabase.getUserByNameDatabase(req.body.username)
         
         if (user !== null){
-            // console.log(await MongoUserDatabase.getUserByNameDatabase(req.body.username));
-            // let user = await MongoUserDatabase.getUserByNameDatabase(req.body.username)
-            // console.log(user);
             const userId = user?.id;
-            const token = jwt.sign({userId}, secretKey, { expiresIn: '1h' }); // 1h d'expiration, ajustez selon vos besoins
-            console.log(token);
+            const token = jwt.sign({userId}, secretKey, { expiresIn: '1h' });
             if(await bcrypt.compare(req.body.password, user.password)){
                 res.status(200).json({isNewUser: false, user: user, token: token});
             }else{
@@ -64,11 +32,8 @@ async function login(req: Request, res: Response) {
             });
             await MongoUserDatabase.createUserDatabase(obj);
             let user = await MongoUserDatabase.getUserByNameDatabase(req.body.username)
-            console.log(user);
             const userId = user?.id;
-            const token = jwt.sign({userId}, secretKey, { expiresIn: '1h' }); // 1h d'expiration, ajustez selon vos besoins
-            console.log(token);
-            // res.status(200).json({ message });
+            const token = jwt.sign({userId}, secretKey, { expiresIn: '1h' });
             res.status(200).json({ isNewUser: true, user: user, token: token });
         } 
         

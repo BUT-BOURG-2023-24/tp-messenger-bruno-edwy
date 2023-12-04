@@ -12,16 +12,13 @@ export class SocketController
 
 	constructor(private io:Server, private Database:Database)
 	{
-		console.log("-------------------------------------------------------Arretez TOUT ");
 		this.connect();
 		this.listenRoomChanged();
 	}
 
 	connect()
 	{
-		console.log("tu ne peux pas");
 		this.io.on("connection", (socket) => {
-			console.log("hello?");
 			// Récupérer les infos voulu depuis les extra headers.
 			// socket.handshake.headers contient ce que vous voulez. 
 
@@ -41,10 +38,8 @@ export class SocketController
 					si vous mettez un type number, cela ne fonctionnera pas.
 			*/
 
-			// Récupérer les infos voulues depuis les extra headers.
             const userId = socket.handshake.headers.userid;
 
-            // Rejoindre les rooms de toutes les conversations où l'utilisateur se trouve
             const userConversations = ConversationDatabase.getAllConversationsForUser(userId);
 			console.log(userConversations);
             userConversations.forEach((conversation: IConversation) => {
@@ -90,7 +85,7 @@ export class SocketController
 			console.log(`room ${room} was deleted`);
 		});
 
-		 // Ajoutez des logs pour les événements @onConnected et @onDisconnected
+		 // test
 		 this.io.of("/").adapter.on("connect", (socket) => {
 			console.log(`socket ${socket.id} connected`);
 		});
