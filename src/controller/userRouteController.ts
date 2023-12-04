@@ -8,10 +8,6 @@ const jwt = require('jsonwebtoken');
 
 	
 async function login(req: Request, res: Response) {
-
-    try {
-        const secretKey = 'deft';
-
     try {
         const secretKey = 'deft';
         const user = await MongoUserDatabase.getUserByNameDatabase(req.body.username)
